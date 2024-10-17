@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "GameIdeaCreator": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "SQL_Connection": "data source=LAPTOP-6NRD130Q;initial catalog=GameIdeaCreator;trusted_connection=true;Encrypt=False"
+      }
+    }
+  }
+}

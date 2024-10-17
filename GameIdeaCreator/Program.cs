@@ -9,16 +9,6 @@ namespace GameIdeaCreator
     {
         static void Main(string[] args)
         {
-            //var builder = new ConfigurationBuilder();
-            //builder.SetBasePath(Directory.GetCurrentDirectory())
-            //    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-            
-
-            IConfiguration configuration = builder.Build();
-
-            var batchSize = configuration["AutoNumberOptions:BatchSize"];
-
-            Console.WriteLine($"Batch Size {batchSize}");
 
 
             RunAsync().GetAwaiter().GetResult();
@@ -27,7 +17,7 @@ namespace GameIdeaCreator
         static async Task RunAsync()
         {
             var caller = new Caller();
-            var handler =  new Handler();
+            var handler = new Handler();
             var mainURL = "https://api.steampowered.com/ISteamApps/GetAppList/v0002/?key=STEAMKEY&format=json";
             var gameURL = "https://store.steampowered.com/api/appdetails?appids=";
             var responseBody = await caller.GetContent(mainURL);
@@ -36,25 +26,30 @@ namespace GameIdeaCreator
             foreach (var game in handler.Games)
             {
                 var gameContent = await caller.GetContent($"{gameURL}{game.Id}");
-                handler.SetGameDescription(gameContent,game);
+                handler.SetGameDescription(gameContent, game);
                 counter++;
+                if (counter == 1)
+                {
+                    break;
+                }
             }
-            Console.WriteLine(counter);
             AddDataToDB(handler);
         }
 
         private static void AddDataToDB(Handler data)
         {
-            using var db = new GameContext();
+            using (var db = new GameContext())
             {
-                var tableRows = db.Games.Select(x => x.Id).ToList();
-                foreach (var game in data.Games)
+                var distinctGame = data.Games.GroupBy(g => g.Id)
+                    .Select(grp => grp.First())
+                    .Where(g => db.Game.Find(g.Id) == null)
+                    .ToList();
+                foreach (var game in distinctGame)
                 {
-                    if (tableRows.Contains(game.Id)) continue;
                     db.Add(game);
                 }
                 db.SaveChanges();
-                var dbgame = db.Games
+                var dbgame = db.Game
                     .OrderBy(x => x.Id)
                     .First();
 

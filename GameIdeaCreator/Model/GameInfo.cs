@@ -11,7 +11,7 @@ namespace GameIdeaCreator
     {
         public int Id { get; set; }
         public string? Name { get; set; }
-        public List<string>? Genres { get; set; }
+        public List<string>? Genre { get; set; }
         public bool? Free { get; set; }
         public string? Type { get; set; }
         public int? ParentID { get; set; }

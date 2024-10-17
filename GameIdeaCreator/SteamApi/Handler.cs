@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
 
 namespace GameIdeaCreator
 {
@@ -20,7 +21,7 @@ namespace GameIdeaCreator
         }
         public void SetGameDescription(string responseBody, GameInfo game)
         {
-            if (responseBody != "" || responseBody == null) return;
+            if (string.IsNullOrEmpty(responseBody)) return;
             try
             {
                 JObject gameJson = JObject.Parse(responseBody);
@@ -30,27 +31,27 @@ namespace GameIdeaCreator
                 if (gameAppList == null) return;
 
                 var genreList = gameAppList["genres"];
-                //if (genreList != null)
-                //{
-                //    foreach (var genre in genreList)
-                //    {
-                //        gameList.Add(genre["description"].ToString());
-                //    }
-                //}
+                if (genreList != null)
+                {
+                    foreach (var genre in genreList)
+                    {
+                        gameList.Add(genre["description"].ToString());
+                    }
+                }
                 if (gameAppList["fullgame"] != null)
                 {
                     game.ParentID = Int32.Parse(gameAppList["fullgame"]["appid"].ToString());
                 }
                 game.Free = gameAppList["is_free"].ToObject<bool>();
                 game.Type = gameAppList["type"].ToString();
-                game.Genres = gameList;
+                game.Genre = gameList;
             }
             catch (Exception)
             {
                 Console.WriteLine($"{responseBody} | {game.Id} , {game.Name}");
                 throw;
             }
-            
+
         }
     }
 }

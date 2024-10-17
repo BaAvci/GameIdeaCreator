@@ -26,7 +26,7 @@ namespace GameIdeaCreator.Migrations
                     b.Property<bool?>("Free")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Genres")
+                    b.Property<string>("Genre")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
